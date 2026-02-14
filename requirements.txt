@@ -1,0 +1,6 @@
+flask
+rembg[cpu]
+Pillow
+python-dotenv
+gunicorn
+werkzeug

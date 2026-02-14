@@ -1,0 +1,66 @@
+# AI Background Remover — Walkthrough
+
+## What Was Built
+
+A full-stack web app that removes image backgrounds using AI (`rembg` / U2Net), with a premium dark-mode glassmorphism UI.
+
+## Project Structure
+
+```
+Remove BG/
+├── app.py                  ← Flask backend (routes, rembg processing, cleanup)
+├── requirements.txt        ← Python dependencies (rembg[cpu], flask, etc.)
+├── .env                    ← Environment config
+├── gunicorn_config.py      ← Production deployment config
+├── templates/
+│   ├── base.html           ← Base layout (Tailwind, Inter font, dark gradient)
+│   └── index.html          ← Main page (drag-drop, preview, comparison, download)
+└── static/
+    ├── css/style.css       ← Glassmorphism, animations, custom scrollbar
+    ├── js/app.js           ← Drag-drop, fetch upload, loading state, result display
+    ├── uploads/            ← Temporary uploaded images (auto-cleaned)
+    └── processed/          ← Temporary processed PNGs (auto-cleaned)
+```
+
+## Key Features
+
+| Feature | Details |
+|---|---|
+| **AI engine** | `rembg[cpu]` — runs on any CPU (AMD Ryzen ✅), no NVIDIA GPU needed |
+| **Upload** | Drag & drop or click, validates type (JPG/PNG) and size (≤ 5 MB) |
+| **Processing** | Removes background → transparent PNG |
+| **Comparison** | Side-by-side Before & After cards with checkered transparency |
+| **Download** | One-click download of the processed PNG |
+| **Auto-cleanup** | Background daemon deletes temp files after 10 minutes |
+| **API endpoint** | `POST /api/remove` returns processed image bytes directly |
+
+## Routes
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/` | Homepage |
+| `POST` | `/remove` | Upload → process → JSON with image paths |
+| `POST` | `/api/remove` | Upload → returns PNG file directly |
+
+## How to Run
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Development
+python app.py
+# → http://127.0.0.1:5000
+
+# Production
+gunicorn -c gunicorn_config.py app:app
+```
+
+## Verification
+
+- Flask server started successfully at `http://127.0.0.1:5000` ✅
+- All dependencies installed (CPU-only, no GPU required) ✅
+- File validation, error handling, and auto-cleanup implemented ✅
+
+> [!NOTE]
+> The first image processing request will download the U2Net model (~170 MB), so it may take around 30 seconds. Subsequent requests will be much faster.
